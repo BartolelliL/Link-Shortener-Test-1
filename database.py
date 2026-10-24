@@ -56,3 +56,15 @@ def create_link(url, code):
             (code,)
         ).fetchone()
         return row
+
+def db_fifty_latest_links():
+    with closing(get_db()) as conn, conn:
+        cursor = conn.cursor()
+        rows = cursor.execute(
+            """
+            SELECT * FROM links
+            ORDER BY created_at DESC
+            LIMIT 50
+            """
+        ).fetchall()
+        return rows
