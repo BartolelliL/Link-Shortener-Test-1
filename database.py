@@ -30,7 +30,10 @@ def init_db():
         ''')
 
 
-def link_out(row, request):
+def db_link_out(row, request):
+    # Returns the dictonary with all 5 fields
+    # specified in the schema, including the short_url.
+
     return {
         "code": row["code"],
         "url": str(row["url"]),
@@ -39,7 +42,7 @@ def link_out(row, request):
         "short_url": str(request.base_url).rstrip("/") + "/" + row["code"]
     }
 
-def create_link(url, code):
+def db_create_link(url, code):
     with closing(get_db()) as conn, conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -68,3 +71,38 @@ def db_fifty_latest_links():
             """
         ).fetchall()
         return rows
+
+def db_delete_link(code: str):
+    with closing(get_db()) as conn, conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            DELETE FROM links WHERE code = ?
+            """,
+            (code,)
+        )
+        return cursor.rowcount > 0  # Returns True if a row was deleted, False otherwise
+
+def db_add_click(code: str):
+    with closing(get_db()) as conn, conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE links
+            SET clicks = clicks + 1
+            WHERE code = ?
+            """,
+            (code,)
+        )
+        return cursor.rowcount > 0  # Returns True if a row was updated, False otherwise
+
+def db_get_link_by_code(code: str):
+    with closing(get_db()) as conn, conn:
+        cursor = conn.cursor()
+        row = cursor.execute(
+            """
+            SELECT * FROM links WHERE code = ?
+            """,
+            (code,)
+        ).fetchone()
+        return row

@@ -1,6 +1,7 @@
 import secrets
 from string import ascii_letters, digits
 
+
 def generate_random_slug(lenght: int = 6):
     """Generate a random slug of specified length."""
     characters = ascii_letters + digits

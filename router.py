@@ -1,9 +1,12 @@
 from sqlite3 import IntegrityError
 
 import fastapi
-from schemas import LinkCreate
+from fastapi.responses import RedirectResponse
+
+from database import db_create_link, db_fifty_latest_links, db_link_out, db_delete_link, db_add_click, \
+    db_get_link_by_code
 from link_generator import generate_random_slug as slug
-from database import link_out, create_link, db_fifty_latest_links
+from schemas import LinkCreate
 
 router = fastapi.APIRouter()
 
@@ -13,8 +16,8 @@ def post_create_link(link: LinkCreate, request: fastapi.Request):
     for _ in range(10):
         try:
             code = slug()
-            row = create_link(url, code)
-            return link_out(row, request)
+            row = db_create_link(url, code)
+            return db_link_out(row, request)
         except IntegrityError:
             continue
     raise fastapi.HTTPException(
@@ -25,4 +28,26 @@ def post_create_link(link: LinkCreate, request: fastapi.Request):
 @router.get("/api/links")
 def get_fifty_latest_links(request: fastapi.Request):
     rows = db_fifty_latest_links()
-    return [link_out(row, request) for row in rows]
+    return [db_link_out(row, request) for row in rows]
+
+@router.delete("/api/links/{code}", status_code=204)
+def delete_link(code: str):
+    delete_operation_successful = db_delete_link(code)
+    if not delete_operation_successful:
+        raise fastapi.HTTPException(
+            status_code=404,
+            detail=f"Link '{code}' not found."
+        )
+
+    return f"Link '{code}' deleted successfully."
+
+@router.get("/{code}", status_code=307)
+def redirect_to_url(code: str):
+    click_operation_successful = db_add_click(code)
+    if not click_operation_successful:
+        raise fastapi.HTTPException(
+            status_code=404,
+            detail=f"Link '{code}' not found."
+        )
+    row = db_get_link_by_code(code)
+    return RedirectResponse(url=row["url"])

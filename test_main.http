@@ -1,19 +1,49 @@
-# Test your FastAPI endpoints
+# curl -X 'GET'
+#  'http://127.0.0.1:8000/api/links'
+#  -H 'accept: */*'
+GET http://127.0.0.1:8000/api/links
+accept: */*
 
+###
+# curl -X 'POST'
+#  'http://127.0.0.1:8000/api/links'
+#  -H 'accept: */*'
+#  -H 'Content-Type: application/json'
+#  -d '{
+#  "url": "https://test.com/testssss"
+#}'
 POST http://127.0.0.1:8000/api/links
-Accept: application/json
+accept: */*
 Content-Type: application/json
 
 {
-  "url": "http://example.com"
+  "url": "https://test.com/testssss"
 }
 
 ###
+# curl -X 'DELETE'
+#  'http://127.0.0.1:8000/api/links/opvgD0'
+#  -H 'accept: */*'
+DELETE http://127.0.0.1:8000/api/links/opvgD0
+accept: */*
 
-POST http://127.0.0.1:8000/api/links
-Accept: application/json
-Content-Type: application/json
+###
+# curl -X 'DELETE'
+#  'http://127.0.0.1:8000/api/links/AAAAAA'
+#  -H 'accept: */*'
+DELETE http://127.0.0.1:8000/api/links/AAAAAA
+accept: */*
 
-{
-  "url": "ciao"
-}
+###
+# curl -X 'GET'
+#  'http://127.0.0.1:8000/0OQHkd'
+#  -H 'accept: */*'
+GET http://127.0.0.1:8000/0OQHkd
+accept: */*
+
+###
+# curl -X 'GET'
+#  'http://127.0.0.1:8000/AAAAAA'
+#  -H 'accept: */*'
+GET http://127.0.0.1:8000/AAAAAA
+accept: */*
